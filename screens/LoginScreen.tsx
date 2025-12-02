@@ -1,35 +1,58 @@
-import { StyleSheet, Text, View, Modal, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  Pressable,
+  TextInput,
+} from "react-native";
 import React, { useState } from "react";
-import Login from "../components/Login";
-import PopUp from "../components/PopUp";
+import { app } from "../firebase.config";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginScreen = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  return (
-    <View>
-      <Login />
-      <Pressable onPress={() => setIsVisible(true)} style={styles.button}>
-        <Text style={styles.btnText}>Show Modal</Text>
-      </Pressable>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isVisible}
-        onRequestClose={() => setIsVisible(!isVisible)}
-      >
-        <View style={styles.container}>
-          <View style={styles.content}>
-            <Text>Eu sou um modal</Text>
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-            <Pressable
-              onPress={() => setIsVisible(false)}
-              style={styles.button}
-            >
-              <Text style={styles.btnText}>Close Modal</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+  const login = async (email: string, password: string) => {
+    try {
+      // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth​
+      const auth = getAuth(app); // Return firebase.auth.Auth object​
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      // https://firebase.google.com/docs/reference/js/auth.user.md#userreload​
+      await auth.currentUser.reload(); //Refreshes the user, if signed in​
+      // Signed in ​
+      // https://firebase.google.com/docs/reference/js/v8/firebase.auth#usercredential​
+      const user = userCred.user;
+      console.log("User", user);
+
+      // navegar para home
+
+      // ...​
+    } catch (error) {
+      const errCode = error.code;
+      const errMessage = error.message;
+      if (errCode === "auth/user-disabled")
+        console.log("User disabled", errMessage);
+      if (errCode === "auth/invalid-email")
+        console.log("Invalid Email", errMessage); // email is not valid
+      if (errCode === "auth/user-not-found")
+        console.log("User not found", errMessage); //User not found​
+      if (errCode === "auth/wrong-password")
+        console.log("Wrong password"), errMessage; // Password is not correct​
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text>Login</Text>
+      <Text>Email</Text>
+      <TextInput style={styles.input} onChangeText={setEmail} />
+      <Text>Password</Text>
+      <TextInput style={styles.input} onChangeText={setPassword} />
+      <Pressable style={styles.btn} onPress={() => login(email, password)}>
+        Sign UP
+      </Pressable>
     </View>
   );
 };
@@ -42,35 +65,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  content: {
-    backgroundColor: "red",
-    padding: 20,
-    borderRadius: 5,
-  },
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "blue",
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 10,
-  },
-  btnText: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
   input: {
-    outlineColor: "gray",
+    height: 40,
     borderColor: "gray",
-    outlineWidth: 2,
-    borderWidth: 2,
-    margin: 5,
+    borderWidth: 1,
+    marginBottom: 10,
+    width: "80%",
+    paddingHorizontal: 10,
+  },
+  btn: {
+    backgroundColor: "cyan",
     padding: 5,
     borderRadius: 5,
-  },
-  welcomeText: {
-    fontSize: 30,
-    marginVertical: 10,
   },
 });
