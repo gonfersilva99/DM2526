@@ -18,6 +18,7 @@ import Friends from './screens/Friends';
 import LogoTitle from './components/LogoTitle';
 import { app } from './firebase.config';
 import Register from './screens/Register';
+import AddGroup from './screens/AddGroup';
 
 const Stack = createStackNavigator();
 
@@ -26,7 +27,7 @@ export default function App() {
  
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Login' screenOptions={{ 
+      <Stack.Navigator initialRouteName='AddGroup' screenOptions={{ 
           headerTitle: props => <LogoTitle {...props} /> ,  
           headerRight: () =>
               <Button
@@ -47,6 +48,7 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Friends" component={Friends} />
         <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="AddGroup" component={AddGroup} />
         
         
       </Stack.Navigator>
